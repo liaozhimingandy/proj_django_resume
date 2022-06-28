@@ -17,7 +17,7 @@ WORKDIR /opt/app
 COPY . /opt/app    
 
 RUN pip install -i https://mirrors.aliyun.com/pypi/simple/ -r /opt/app/requirements.txt || \
-    pip install -r /opt/app/requirements.txt \
+    pip install -r /opt/app/requirements.txt
     
 RUN rm -rf /opt/app/db.sqlite3 \
     && mv /opt/app/proj_django_resume/settings_for_docker.py  /opt/app/proj_django_resume/settings.py \
