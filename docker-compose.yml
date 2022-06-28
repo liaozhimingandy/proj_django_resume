@@ -15,7 +15,6 @@ services:
       - TZ=Asia/Shanghai
     volumes:
       - data_static:/opt/app/static
-      - ./db.sqlite3:/opt/app/db.sqlite3
       
   web:
     depends_on:
