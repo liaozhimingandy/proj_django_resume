@@ -15,6 +15,7 @@ services:
       - TZ=Asia/Shanghai
     volumes:
       - data_static:/opt/app/static
+      - ./db.sqlite3:/opt/app/db.sqlite3
       
   web:
     depends_on:
@@ -29,7 +30,6 @@ services:
       - ./config/resume_nginx.conf:/etc/nginx/conf.d/resume_nginx.conf
       # - /d/PyCharm/proj_django_resume/proj_django_resume/config/resume_nginx.conf:/etc/nginx/nginx.conf
       - data_nginx_log:/var/log/nginx
-      - data_static:/opt/app/static
 
 
 volumes:
