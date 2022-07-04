@@ -22,6 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('resume/', include('resume.urls')),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
+
+    path('api/', include('api.urls')),
 ]
 #
 if settings.DEBUG:

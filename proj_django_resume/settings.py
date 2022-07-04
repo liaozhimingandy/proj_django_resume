@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,8 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'rest_framework',
+    'django_filters',
     'ckeditor',  # 富文本编辑器
-    'resume', # 自定义app
+
+    'resume',  # 自定义app
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -108,8 +113,8 @@ CKEDITOR_CONFIGS = {
         # 使用简体中文
         'language': 'zh-cn',
         'toolbar': 'full',  # 工具条功能
-        'height': 300,      # 编辑器高度
-        'width': 'auto',     # 编辑器宽
+        'height': 300,  # 编辑器高度
+        'width': 'auto',  # 编辑器宽
     },
 }
 CKEDITOR_UPLOAD_PATH = ''  # 上传图片保存路径，留空则调用django的文件上传功能
@@ -133,8 +138,54 @@ STATIC_URL = 'static/'
 # python manage.py collectstatic 收集文件到下面文件文件夹里
 STATIC_ROOT = os.path.join(BASE_DIR, "assets")
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# drf配置
+REST_FRAMEWORK = {
+    # 分页设置
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    # 指定过滤后端
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', ],
+    # 渲染器
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_xml.renderers.XMLRenderer',
+    ),
+    # 指定用于支持coreapi的Schema
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_THROTTLE_CLASSES': (  # 定义限流类
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ),
+    # 定义限流速率（支持天数/时/分/秒的限制）
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '10/m',
+        'user': '60/m',
+    },
+
+    # 异常处理
+    # 'EXCEPTION_HANDLER': 'luffy.utils.exceptions.custom_exception_handler',
+
+    # 定义认证配置
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # jwt认证
+        'rest_framework.authentication.BasicAuthentication',  # 基本认证
+        'rest_framework.authentication.SessionAuthentication',  # session认证
+    ),
+    # 默认权限设置
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    )
+}
+
+# jwt载荷中的有效期设置
+# 用法： https://zhuanlan.zhihu.com/p/339409769
+SIMPLE_JWT = {
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=15),
+    'ROTATE_REFRESH_TOKENS': True,
+}
