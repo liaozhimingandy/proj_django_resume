@@ -14,7 +14,7 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - data_static:/opt/app/staticfiles
+      - data_static:/opt/app/assets
       
   web:
     depends_on:

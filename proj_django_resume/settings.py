@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'proj_django_resume.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'staticfiles/db.sqlite3',
+        'NAME': BASE_DIR / 'assets/db.sqlite3',
     }
 }
 
@@ -131,7 +131,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # python manage.py collectstatic 收集文件到下面文件文件夹里
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = os.path.join(BASE_DIR, "assets")
 
 
 # Default primary key field type
