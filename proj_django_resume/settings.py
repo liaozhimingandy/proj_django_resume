@@ -19,12 +19,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=nk4852m0)81-)-54(9dr-_%w@-oowoobqh(7n60+hw$139_1u'
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-=nk4852m0)81-)-54(9dr-_%w@-oowoobqh(7n60+hw$139_1u"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(os.environ.get("DEBUG", default=1))
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(" ")
 
-ALLOWED_HOSTS = []
+CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "http://*").split(" ")
 
 # Application definition
 
@@ -125,7 +128,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 # static目录配置
-STATIC_URL = 'staticfiles/'
+STATIC_URL = 'static/'
 
 # python manage.py collectstatic 收集文件到下面文件文件夹里
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
