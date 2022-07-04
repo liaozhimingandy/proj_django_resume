@@ -6,7 +6,7 @@ from .models import BasicInfoModel, EducationModel, SkillModel, WorkExperienceMo
 
 # Create your views here.
 def hello(request):
-    data = {'code': 200, 'msg': '恭喜'}
+    data = {'code': 200, 'msg': 'hello'}
     return JsonResponse(data)
 
 
@@ -25,7 +25,7 @@ def show(request, user):
     list_badge_color = ['badge-info', 'badge-primary', 'badge-light', 'badge-success', 'badge-danger',
                         'badge-secondary', 'badge-warning', 'badge-dark']
 
-    return render(request, 'resume.html',
+    return render(request, 'resume/resume.html',
                   context={'basic_info': basic_info, 'edu_infos': edu_infos,
                            'skill_infos': skill_infos, 'list_bg_color': list_bg_color,
                            'list_badge_color': list_badge_color, 'work_experiences': work_experiences})

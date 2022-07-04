@@ -18,6 +18,6 @@ from .views import hello, show
 
 
 urlpatterns = [
-    path(r'^$', hello),
-    re_path(r'^(?P<user>\w+).html$', show),
+    re_path(r'^$', hello, name='hello'),
+    re_path(r'show/(?P<user>\w+)/', show, name='show-resume'),
 ]
