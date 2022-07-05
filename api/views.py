@@ -1,17 +1,27 @@
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
+
 from rest_framework.decorators import action
+from rest_framework.viewsets import GenericViewSet, mixins
+
+from .serializers import HelloApiSerializer
 
 
 # Create your views here.
-class HelloApiViewSet(viewsets.ViewSet):
+class HelloApiViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, GenericViewSet):
     """
-    测试
+    get:
+    返回所有图书信息.
     """
+    # 编写以下内容
+    serializer_class = HelloApiSerializer
 
     def list(self, request):
-        """查询所有"""
+        """
+        查询所有数据
+        """
         # print(request.query_params)
+
         data = {'code': 200, 'msg': 'hello word!'}
         return Response(data)
 
@@ -19,9 +29,11 @@ class HelloApiViewSet(viewsets.ViewSet):
         """
         创建数据
         :param request:
+        :param page: 页数
         :return:
         """
         # print(request.data)
+        serializer_class = HelloApiSerializer
         data = {'code': 200, 'msg': 'ok!'}
         return Response(data)
 

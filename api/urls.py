@@ -19,7 +19,7 @@ from rest_framework.documentation import include_docs_urls
 from .views import HelloApiViewSet
 
 urlpatterns = [
-    re_path(r'docs/', include_docs_urls(title="api接口文档")),
+    re_path(r'docs/', include_docs_urls(title="api接口文档", description="这个一个测试的api文档,仅用于测试")),
 ]
 
 router = DefaultRouter()
