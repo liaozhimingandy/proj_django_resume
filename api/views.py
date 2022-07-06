@@ -5,10 +5,11 @@ from rest_framework.decorators import action
 from rest_framework.viewsets import GenericViewSet, mixins
 
 from .serializers import HelloApiSerializer
+from drf_yasg.utils import swagger_auto_schema
 
 
 # Create your views here.
-class HelloApiViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, GenericViewSet):
+class HelloApiViewSet(viewsets.ViewSet):
     """
     get:
     返回所有图书信息.
@@ -16,9 +17,12 @@ class HelloApiViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, GenericV
     # 编写以下内容
     serializer_class = HelloApiSerializer
 
+    @swagger_auto_schema(operation_description="partial_update description override",
+                         responses={'404': 'id not found'})
     def list(self, request):
         """
-        查询所有数据
+        :param request:
+        :return:
         """
         # print(request.query_params)
 
@@ -33,7 +37,6 @@ class HelloApiViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, GenericV
         :return:
         """
         # print(request.data)
-        serializer_class = HelloApiSerializer
         data = {'code': 200, 'msg': 'ok!'}
         return Response(data)
 
