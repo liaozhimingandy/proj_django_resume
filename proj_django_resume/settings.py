@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'coreapi',
     'rest_framework',
     'django_filters',
     'ckeditor',  # 富文本编辑器
@@ -157,7 +157,7 @@ REST_FRAMEWORK = {
         'rest_framework_xml.renderers.XMLRenderer',
     ),
     # 指定用于支持coreapi的Schema
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
     'DEFAULT_THROTTLE_CLASSES': (  # 定义限流类
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle'
@@ -171,6 +171,10 @@ REST_FRAMEWORK = {
     # 异常处理
     # 'EXCEPTION_HANDLER': 'luffy.utils.exceptions.custom_exception_handler',
 
+    # 5.1过滤排序（全局）：Filtering 过滤排序
+    'SEARCH_PARAM': 'search',
+    'ORDERING_PARAM': 'ordering',
+
     # 定义认证配置
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',  # jwt认证
@@ -180,7 +184,13 @@ REST_FRAMEWORK = {
     # 默认权限设置
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
-    )
+    ),
+    # Schemas
+    'SCHEMA_COERCE_PATH_PK': True,
+    'SCHEMA_COERCE_METHOD_NAMES': {
+        'retrieve': 'read',
+        'destroy': 'delete'
+    },
 }
 
 # jwt载荷中的有效期设置

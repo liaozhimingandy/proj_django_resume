@@ -13,13 +13,14 @@
 #   @Description : app内部url
 #
 # ======================================================================
-from django.urls import re_path
+from django.urls import re_path, include
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.documentation import include_docs_urls
 from .views import HelloApiViewSet, TestView
 
 urlpatterns = [
     re_path(r'docs/', include_docs_urls(title="api接口文档", description='...')),
+    re_path('api-auth/', include('rest_framework.urls', namespace='res_framework'))  # 认证地址
     # re_path('^test$', TestView.as_view(), name='test'),
 ]
 

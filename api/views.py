@@ -4,17 +4,27 @@ from rest_framework.generics import ListAPIView
 from rest_framework.decorators import action
 
 from .serializer import HelloSerializer
+from .models import Hello
 
 
 # Create your views here.
-class HelloApiViewSet(viewsets.ViewSet):
+class HelloApiViewSet(viewsets.ModelViewSet):
     """
     多方法视图集合,提供增删改查
+    list: 查询所有
+    create: 创建数据
     """
 
+    serializer_class = HelloSerializer
+    queryset = []
 
     def list(self, request):
-        """查询所有"""
+        """
+        查询所有
+        test
+        :param request:
+        :return:
+        """
         # print(request.query_params)
         data = {'code': 200, 'msg': 'hello word!'}
         return Response(data)
@@ -26,11 +36,10 @@ class HelloApiViewSet(viewsets.ViewSet):
         :return:
         """
         # print(request.data)
-        serializer_class = HelloSerializer
         data = {'code': 200, 'msg': 'ok!'}
         ser = HelloSerializer(data=request.data)
-        if ser.is_valid(raise_exception=True):
-            data = ser.validated_data
+        ser.is_valid(raise_exception=True)
+        data = ser.validated_data
         return Response(data)
 
     def retrieve(self, request, pk=None):
