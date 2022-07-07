@@ -14,14 +14,17 @@
 #
 # ======================================================================
 from django.urls import re_path
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.documentation import include_docs_urls
-from .views import HelloApiViewSet
+from .views import HelloApiViewSet, TestView
 
 urlpatterns = [
-    re_path(r'docs/', include_docs_urls(title="api接口文档")),
+    re_path(r'docs/', include_docs_urls(title="api接口文档", description='...')),
+    # re_path('^test$', TestView.as_view(), name='test'),
 ]
 
 router = DefaultRouter()
-router.register(r'v1/hello', HelloApiViewSet, basename='hello-api')
+router.register(r'hello', HelloApiViewSet, basename='hello')
+router.register(r'test', TestView, basename='test')
 urlpatterns += router.urls
+# print(router.urls)

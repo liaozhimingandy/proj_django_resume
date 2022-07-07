@@ -1,13 +1,17 @@
 from rest_framework.response import Response
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
+from rest_framework.generics import ListAPIView
 from rest_framework.decorators import action
+
+from .serializer import HelloSerializer
 
 
 # Create your views here.
 class HelloApiViewSet(viewsets.ViewSet):
     """
-    测试
+    多方法视图集合,提供增删改查
     """
+
 
     def list(self, request):
         """查询所有"""
@@ -22,7 +26,11 @@ class HelloApiViewSet(viewsets.ViewSet):
         :return:
         """
         # print(request.data)
+        serializer_class = HelloSerializer
         data = {'code': 200, 'msg': 'ok!'}
+        ser = HelloSerializer(data=request.data)
+        if ser.is_valid(raise_exception=True):
+            data = ser.validated_data
         return Response(data)
 
     def retrieve(self, request, pk=None):
@@ -73,4 +81,14 @@ class HelloApiViewSet(viewsets.ViewSet):
         :return:
         """
         data = {'code': 200, 'msg': 'ok!'}
+        return Response(data)
+
+
+class TestView(mixins.ListModelMixin, viewsets.ViewSet):
+    """
+    自定义视图集合,单方法提供,并且需注册到api root视图示例,提供get查询
+    """
+
+    def list(self, request, *args, **kwargs):
+        data = {'code': 200, 'msg': 'hello word!'}
         return Response(data)
