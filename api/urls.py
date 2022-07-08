@@ -14,13 +14,18 @@
 #
 # ======================================================================
 from django.urls import re_path, include
+
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework.documentation import include_docs_urls
+from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
+
 from .views import HelloApiViewSet, TestView
 
 urlpatterns = [
     re_path(r'docs/', include_docs_urls(title="api接口文档", description='...')),
-    re_path('api-auth/', include('rest_framework.urls', namespace='res_framework'))  # 认证地址
+    re_path('api-auth/', include('rest_framework.urls', namespace='res_framework')),  # 认证地址
+    # re_path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # re_path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # re_path('^test$', TestView.as_view(), name='test'),
 ]
 
