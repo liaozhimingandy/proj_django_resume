@@ -1,10 +1,10 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins
-from rest_framework.generics import ListAPIView
 from rest_framework.decorators import action
-
 from .serializer import HelloSerializer
-from .models import Hello
 
 
 # Create your views here.
@@ -18,7 +18,9 @@ class HelloApiViewSet(viewsets.ModelViewSet):
     serializer_class = HelloSerializer
     queryset = []
 
-    def list(self, request):
+    # 缓存下面的url地址
+    @method_decorator(cache_page(60 * 60 * 2))
+    def list(self, request, *args, **kwargs):
         """
         查询所有
         test
@@ -26,10 +28,11 @@ class HelloApiViewSet(viewsets.ModelViewSet):
         :return:
         """
         # print(request.query_params)
-        data = {'code': 200, 'msg': 'hello word!'}
+        # print(request.version)
+        data = {'code': 200, 'msg': 'hello word!', 'version': request.version}
         return Response(data)
 
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
         """
         创建数据
         :param request:
@@ -42,7 +45,7 @@ class HelloApiViewSet(viewsets.ModelViewSet):
         data = ser.validated_data
         return Response(data)
 
-    def retrieve(self, request, pk=None):
+    def retrieve(self, request, pk=None, *args, **kwargs):
         """
         查询
         :param request:
@@ -52,7 +55,7 @@ class HelloApiViewSet(viewsets.ModelViewSet):
         data = {'code': 200, 'msg': 'ok!'}
         return Response(data)
 
-    def update(self, request, pk=None):
+    def update(self, request, pk=None, *args, **kwargs):
         """
         更新
         :param request:
@@ -62,7 +65,7 @@ class HelloApiViewSet(viewsets.ModelViewSet):
         data = {'code': 200, 'msg': 'ok!'}
         return Response(data)
 
-    def partial_update(self, request, pk=None):
+    def partial_update(self, request, pk=None, *args, **kwargs):
         """
         部分更新
         :param request:
@@ -72,7 +75,7 @@ class HelloApiViewSet(viewsets.ModelViewSet):
         data = {'code': 200, 'msg': 'ok!'}
         return Response(data)
 
-    def destroy(self, request, pk=None):
+    def destroy(self, request, pk=None, *args, **kwargs):
         """
         删除记录
         :param request:
@@ -82,8 +85,8 @@ class HelloApiViewSet(viewsets.ModelViewSet):
         data = {'code': 200, 'msg': 'ok!'}
         return Response(data)
 
-    @action(['get', ], detail=False)
-    def latest(self, request):
+    @action(['post', ], detail=False, url_path='get-latest', url_name='latest')
+    def latest(self, request, *args, **kwargs):
         """
         获取最新一条数据
         :param request:
@@ -93,11 +96,23 @@ class HelloApiViewSet(viewsets.ModelViewSet):
         return Response(data)
 
 
-class TestView(mixins.ListModelMixin, viewsets.ViewSet):
+class TestView(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     自定义视图集合,单方法提供,并且需注册到api root视图示例,提供get查询
     """
+    serializer_class = HelloSerializer
+    queryset = []
 
     def list(self, request, *args, **kwargs):
         data = {'code': 200, 'msg': 'hello word!'}
+        return Response(data)
+
+    @action(['post', ], detail=True, url_path='get-latest', url_name='latest')
+    def latest(self, request):
+        """
+        获取最新一条数据
+        :param request:
+        :return:
+        """
+        data = {'code': 200, 'msg': 'ok!'}
         return Response(data)

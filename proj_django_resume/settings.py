@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'ckeditor',  # 富文本编辑器
 
     'resume',  # 自定义app
-    'api'
+    'api',
+    'account',
 ]
 
 MIDDLEWARE = [
@@ -145,7 +146,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # drf配置
 REST_FRAMEWORK = {
-    # 分页设置
+    # 5.分页设置
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     # 指定过滤后端
@@ -162,7 +163,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle'
     ),
-    # 定义限流速率（支持天数/时/分/秒的限制）
+    # 3.定义限流速率（支持天数/时/分/秒的限制）
     'DEFAULT_THROTTLE_RATES': {
         'anon': '10/m',
         'user': '60/m',
@@ -175,15 +176,18 @@ REST_FRAMEWORK = {
     'SEARCH_PARAM': 'search',
     'ORDERING_PARAM': 'ordering',
 
-    # 定义认证配置
+    # 1.定义认证配置
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',  # jwt认证
         'rest_framework.authentication.BasicAuthentication',  # 基本认证
-        'rest_framework.authentication.SessionAuthentication',  # session认证
+        'rest_framework.authentication.SessionAuthentication',  # session认证 drf测试时需要用上
     ),
-    # 默认权限设置
+    # 2.默认权限设置
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        # 'rest_framework.permissions.IsAdminUser',  # 管理员可以访问
+        # 'rest_framework.permissions.IsAuthenticated',  # 认证用户可以访问
+        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # 认证用户可以访问, 否则只能读取 authentication: token访问接口
+        'rest_framework.permissions.AllowAny',  # 所有用户都可以访问
     ),
     # Schemas
     'SCHEMA_COERCE_PATH_PK': True,
@@ -191,11 +195,25 @@ REST_FRAMEWORK = {
         'retrieve': 'read',
         'destroy': 'delete'
     },
+
+    # 6.全局版本控制：Versioning  接口版本控制;
+    # 请求头携带eg: Accept: application/json; version=1.0
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.AcceptHeaderVersioning",  # 类的路径
+    'DEFAULT_VERSION': 'v1',  # 默认的版本
+    'ALLOWED_VERSIONS': ['v1', 'v2'],  # 允许的版本
+    'VERSION_PARAM': 'version',
 }
 
 # jwt载荷中的有效期设置
 # 用法： https://zhuanlan.zhihu.com/p/339409769
 SIMPLE_JWT = {
+    # 过期时间
     'REFRESH_TOKEN_LIFETIME': timedelta(minutes=15),
+    # 允许刷新
     'ROTATE_REFRESH_TOKENS': True,
+    # 刷新的过期时间
+    'JWT_REFRESH_EXOIRATION_DELTA': timedelta(days=2),
+    'JWT_AUTH_HEADER_PREFIX': 'JWT'
 }
+# 自定义用户模型
+# AUTH_USER_MODEL = 'users.User'
