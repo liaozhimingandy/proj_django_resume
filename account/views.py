@@ -1,39 +1,51 @@
 from django.shortcuts import render
-from django.contrib import auth
+from django.contrib.auth import get_user_model
 
+from rest_framework import viewsets
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import MyTokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
+
+from .serializers import AccountTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from .serializers import (
+    UserRegSerializer
+)
+User = get_user_model()
 
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
 
-
-# Create your views here.
-class Login(APIView):
+class AccountLoginTokenObtainPairView(TokenObtainPairView):
     """用户登录接口"""
+    serializer_class = AccountTokenObtainPairSerializer
 
-    def post(self, request, verison=None):
 
-        # 1. 获取到表单的数据
-        req_data = request.data
-        username = request.data.get('username')
-        password = request.data.get('password')
+class UserViewSet(CreateModelMixin, viewsets.GenericViewSet):
+    """
+    用户注册
+    """
+    serializer_class = UserRegSerializer
+    queryset = User.objects.all()
 
-        data = {'code': 200, 'msg': 'success'}
-        # 2.校验用户
-        user_obj = auth.authenticate(request, username=username, password=password)
-        if user_obj:
-            # payload = jwt_payload_handler(user_obj)
-            # token = jwt_encode_handler(payload)
-            user_data = {'username': user_obj.username, 'token': token, }
-            data['data'] = user_data
-        else:
-            data['code'] = 400
-            data['msg'] = '账号或密码错误'
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
 
-        return Response(data)
+        serializer.is_valid(raise_exception=True)
+        user = self.perform_create(serializer)
+
+        ret_dict = serializer.data
+        # 签发token
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        ret_dict["token"] = access_token
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(ret_dict, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
 
 

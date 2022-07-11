@@ -216,4 +216,4 @@ SIMPLE_JWT = {
     'JWT_AUTH_HEADER_PREFIX': 'JWT'
 }
 # 自定义用户模型
-# AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "account.UserProfile"

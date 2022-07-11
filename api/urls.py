@@ -14,9 +14,7 @@
 #
 # ======================================================================
 from django.urls import re_path, include
-
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 from .views import HelloApiViewSet, TestView
 
@@ -27,8 +25,6 @@ router.register(r'test', TestView, basename='test')
 
 urlpatterns = [
     re_path('', include(router.urls)),
-    re_path('token/obtain', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    re_path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     # re_path('^test$', TestView.as_view(), name='test'),
 ]
 
