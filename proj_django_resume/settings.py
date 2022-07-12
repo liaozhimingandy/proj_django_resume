@@ -186,8 +186,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         # 'rest_framework.permissions.IsAdminUser',  # 管理员可以访问
         # 'rest_framework.permissions.IsAuthenticated',  # 认证用户可以访问
-        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # 认证用户可以访问, 否则只能读取 authentication: token访问接口
-        'rest_framework.permissions.AllowAny',  # 所有用户都可以访问
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # 认证用户可以访问, 否则只能读取 authentication: Bearer [token]访问接口
+        # 'rest_framework.permissions.AllowAny',  # 所有用户都可以访问
     ),
     # Schemas
     'SCHEMA_COERCE_PATH_PK': True,
@@ -213,7 +213,11 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     # 刷新的过期时间
     'JWT_REFRESH_EXOIRATION_DELTA': timedelta(days=2),
-    'JWT_AUTH_HEADER_PREFIX': 'JWT'
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=300),  # 设置 JWT Token 的有效时间
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
 }
 # 自定义用户模型
 AUTH_USER_MODEL = "account.UserProfile"

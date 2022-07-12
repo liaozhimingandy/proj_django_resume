@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+     {# 引用jquery #}
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="button" value="提交" id="id_submit">
+</form>
+<script>
+    {# ajax #}
+    $("#id_submit").click(function(){
+        username = $("[name='username']").val();
+        password = $("[name='password']").val();
+        csrf = $("[type='hidden']").val();
+        console.log(username,password,csrf);
+        {# 🌈post提交 #}
+        {# $.post("地址",{参数},function(返回值){}) #}
+        $.post("/account/api/login/",{'username':username,'password':password,'csrfmiddlewaretoken':csrf},function(data){
+            console.log(data)
+        })
+
+    });
+</script>
+</body>
+</html>

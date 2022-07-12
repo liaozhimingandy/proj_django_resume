@@ -39,6 +39,8 @@ urlpatterns = [
     re_path('token/obtain', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     re_path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     re_path('token/verify', TokenVerifyView.as_view(), name='token_verify'),
+    re_path('login', views.Login, name='login'),
+    re_path('index', views.index, name='index'),
 ]
 
 router = DefaultRouter()
