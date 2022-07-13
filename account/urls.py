@@ -19,6 +19,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView, TokenVerifyView
 
+app_name = 'account'
 urlpatterns = [
     # url(r'^login/$', views.login, name='login'),
     # url(r'^logout/$', views.logout, name='logout'),
@@ -35,14 +36,17 @@ urlpatterns = [
 
     # 用户登录api
     # re_path(r'^api/login/$', TokenObtainPairView.as_view(), name='login'),
-    re_path(r'^api/login/$', views.AccountLoginTokenObtainPairView.as_view(), name='login'),
-    re_path('token/obtain', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    re_path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
-    re_path('token/verify', TokenVerifyView.as_view(), name='token_verify'),
-    re_path('login', views.Login, name='login'),
+    re_path(r'^api/login/$', views.AccountLoginTokenObtainPairView.as_view(), name='api-login'),
+    # re_path('api/token/obtain', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    re_path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
+    re_path('api/token/verify', TokenVerifyView.as_view(), name='token_verify'),
+    re_path(r'^api/password_change/$', views.password_change, name='password_change'),
+    # re_path('login', views.Login, name='login'),
     re_path('index', views.index, name='index'),
+    re_path('login', views.LoginView.as_view(), name='login'),
 ]
 
 router = DefaultRouter()
 router.register(r'register', views.UserViewSet, basename='register')
 urlpatterns += router.urls
+print(urlpatterns)

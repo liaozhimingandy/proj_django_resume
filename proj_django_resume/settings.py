@@ -179,8 +179,8 @@ REST_FRAMEWORK = {
     # 1.定义认证配置
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',  # jwt认证
-        'rest_framework.authentication.BasicAuthentication',  # 基本认证
-        'rest_framework.authentication.SessionAuthentication',  # session认证 drf测试时需要用上
+        # 'rest_framework.authentication.BasicAuthentication',  # 基本认证
+        # 'rest_framework.authentication.SessionAuthentication',  # session认证 drf测试时需要用上
     ),
     # 2.默认权限设置
     'DEFAULT_PERMISSION_CLASSES': (

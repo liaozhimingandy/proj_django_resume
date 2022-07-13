@@ -46,9 +46,11 @@ class AccountTokenObtainPairSerializer(TokenObtainPairSerializer):
         # 令牌到期时间
         data['expire'] = refresh.access_token.payload['exp']  # 有效期
         data['refresh'] = str(refresh)
-        data['access'] = str(refresh.access_token)
+        # data['access'] = str(refresh.access_token)
+        data.pop('access')
         data['token'] = str(refresh.access_token)
         data['username'] = self.user.username
+
         return data
 
 
