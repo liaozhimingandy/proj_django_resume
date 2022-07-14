@@ -135,6 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 # static目录配置
 STATIC_URL = 'static/'
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # python manage.py collectstatic 收集文件到下面文件文件夹里
 STATIC_ROOT = os.path.join(BASE_DIR, "assets")

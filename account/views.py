@@ -31,7 +31,6 @@ class AccountLoginTokenObtainPairView(TokenObtainPairView):
     serializer_class = AccountTokenObtainPairSerializer
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class UserViewSet(CreateModelMixin, viewsets.GenericViewSet):
     """
     用户注册
@@ -108,20 +107,25 @@ class UserViewSet(CreateModelMixin, viewsets.GenericViewSet):
         """
         用户登录
         """
-        data = request.data
-        ser = self.get_serializer(data=data)
-        ser.is_valid(raise_exception=True)
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
 
-        username = ser.vaild_data.get('username', '')
-        password = ser.vaild_data.get('password')
+        # 登录
         user_obj = auth.authenticate(request, username=username, password=password)
 
-        return Response('成功')
+        if user_obj is not None and user_obj.is_active:
+            login(request, user_obj)
+
+        return render(request, 'account/index.html', context={'user': user_obj})
 
 
 def index(request):
-    user = request.user
-    return render(request, 'account/index.html', context={'user': user})
+    user_obj = request.user
+
+    # 判断用户是否登录
+    if not user_obj.is_authenticated:
+        return redirect(reverse("account:login"))
+    return render(request, 'account/index.html', context={'user': user_obj})
 
 
 def password_change(request):
@@ -147,24 +151,34 @@ def password_change(request):
 
 
 class LoginView(View):
+    """
+    登录页面处理逻辑
+    """
     template_name = "account/login.html"
 
     def get(self, request, *args, **kwargs):
         form = LoginForm()
-        return render(request, template_name=self.template_name, context={'form': form})
-
-    def post(self, request, *args, **kwargs):
-        # create a form instance and populate it with data from the request:
-        form = LoginForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            # 注意：验证用户名和密码是否正确放到forms中去验证了
-            # login(request, request.user)  # 此处不能使用request.user,因为他还没有验证，是匿名用户
-            # 所以需要在form中校验通过后传递过来user
-            login(request, form.cleaned_data["user"])
+        # 判断用户是否登录
+        if request.user.is_authenticated:
             next_url = request.GET.get("next", reverse("account:index"))
             return redirect(next_url)
         else:
-            form = LoginForm()
             return render(request, template_name=self.template_name, context={'form': form})
+
+    def post(self, request, *args, **kwargs):
+        """
+        用户登录
+        """
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        is_checked = int(request.POST.get('is_checked', '0'))
+
+        # 登录
+        user_obj = auth.authenticate(request, username=username, password=password)
+
+        # 判断是否登录及是否需要保持登录状态
+        if user_obj is not None and user_obj.is_active and is_checked:
+            login(request, user_obj)
+
+        return render(request, 'account/index.html', context={'user': user_obj})
 

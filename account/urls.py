@@ -49,4 +49,3 @@ urlpatterns = [
 router = DefaultRouter()
 router.register(r'register', views.UserViewSet, basename='register')
 urlpatterns += router.urls
-print(urlpatterns)
