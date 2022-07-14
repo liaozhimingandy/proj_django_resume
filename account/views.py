@@ -1,12 +1,8 @@
-from coreapi.auth import SessionAuthentication
-from django.contrib import auth
-from django.http import HttpResponseRedirect
+from django.contrib import auth, messages
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model, login, update_session_auth_hash, logout
 from django.urls import reverse
-from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -115,7 +111,6 @@ class UserViewSet(CreateModelMixin, viewsets.GenericViewSet):
 
         if user_obj is not None and user_obj.is_active:
             login(request, user_obj)
-
         return render(request, 'account/index.html', context={'user': user_obj})
 
 
@@ -163,6 +158,9 @@ class LoginView(View):
             next_url = request.GET.get("next", reverse("account:index"))
             return redirect(next_url)
         else:
+            msg = self.request.session.pop('msg', False)
+            if msg:
+                messages.info(self.request, f'{msg}')
             return render(request, template_name=self.template_name, context={'form': form})
 
     def post(self, request, *args, **kwargs):
@@ -176,9 +174,30 @@ class LoginView(View):
         # 登录
         user_obj = auth.authenticate(request, username=username, password=password)
 
+        # 若验证失败,则跳转到登录界面
+        if not user_obj:
+            self.request.session['msg'] = '登陆失败，用户名或密码无效'
+            return redirect('account:login')
+
         # 判断是否登录及是否需要保持登录状态
         if user_obj is not None and user_obj.is_active and is_checked:
             login(request, user_obj)
 
-        return render(request, 'account/index.html', context={'user': user_obj})
+        # return render(request, 'account/index.html', context={'user': user_obj})
+        return redirect('account:index')
 
+
+class IndexView(View):
+    """
+    首页处理逻辑
+    """
+    template_name = "account/index.html"
+
+    def get(self,  request, *args, **kwargs):
+        user_obj = request.user
+
+        # 判断用户是否登录
+        if not user_obj.is_authenticated:
+            return redirect(reverse("account:login"))
+
+        return render(request, self.template_name, context={'user': user_obj})
