@@ -191,7 +191,7 @@ class IndexView(View):
     """
     首页处理逻辑
     """
-    template_name = "account/404.html"
+    template_name = "account/index.html"
 
     def get(self,  request, *args, **kwargs):
         user_obj = request.user

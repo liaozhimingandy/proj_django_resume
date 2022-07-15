@@ -17,6 +17,8 @@ class HelloApiViewSet(viewsets.ModelViewSet):
 
     serializer_class = HelloSerializer
     queryset = []
+    lookup_field = 'code'  # 指定主键名称,默认pk
+    # lookup_url_kwarg = ('msg', 'code'),  # 查询单一数据时 URL 中的参数关键字名称，默认与 lookup_field 相同
 
     # 缓存下面的url地址
     @method_decorator(cache_page(60 * 60 * 2))
@@ -85,7 +87,7 @@ class HelloApiViewSet(viewsets.ModelViewSet):
         data = {'code': 200, 'msg': 'ok!'}
         return Response(data)
 
-    @action(['post', ], detail=False, url_path='get-latest', url_name='latest')
+    @action(['post', ], detail=False, url_path='latest', url_name='latest')
     def latest(self, request, *args, **kwargs):
         """
         获取最新一条数据
@@ -108,7 +110,7 @@ class TestView(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response(data)
 
     # detal: 是否需要使用主键来获取数据
-    @action(['post', ], detail=False, url_path='get-latest', url_name='latest')
+    @action(['post', ], detail=False, url_path='latest', url_name='latest')
     def latest(self, request):
         """
         获取最新一条数据

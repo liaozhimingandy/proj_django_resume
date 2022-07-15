@@ -50,14 +50,15 @@
 {% endblock %}
 
 <!-- Container -->
-<div class="md-container" data-md-component="container">
+<div>
 
-    <!-- Navigation tabs (collapsing) -->
+    <!-- header  -->
     {% block tabs %}
+        {% include 'account/partials/header.html' %}
     {% endblock %}
 
     <!-- Main area -->
-    <main class="md-main" data-md-component="main">
+    <main class="container-fluid" data-md-component="main">
         <div class="md-main__inner md-grid">
 
             <!-- Navigation -->
