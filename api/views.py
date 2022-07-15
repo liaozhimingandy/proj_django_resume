@@ -107,12 +107,24 @@ class TestView(mixins.ListModelMixin, viewsets.GenericViewSet):
         data = {'code': 200, 'msg': 'hello word!'}
         return Response(data)
 
-    @action(['post', ], detail=True, url_path='get-latest', url_name='latest')
+    # detal: 是否需要使用主键来获取数据
+    @action(['post', ], detail=False, url_path='get-latest', url_name='latest')
     def latest(self, request):
         """
         获取最新一条数据
-        :param request:
+        : param request:
         :return:
         """
         data = {'code': 200, 'msg': 'ok!'}
+        return Response(data)
+
+    @action(['get', ], detail=False, url_name='test', url_path=r'test/(?P<code>\w+)')
+    def test(self, request, code=None, *args, **kwargs):
+        """
+        获取最新一条数据, 自定义url参数
+        :param code:
+        :param request:
+        :return:
+        """
+        data = {'code': code, 'msg': 'ok!'}
         return Response(data)
