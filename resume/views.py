@@ -1,5 +1,8 @@
-from django.shortcuts import render, get_object_or_404, get_list_or_404
+from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.http.response import JsonResponse
+from django.urls import reverse
+from django.views import View
+from django.views.generic import UpdateView
 
 from .models import BasicInfoModel, EducationModel, SkillModel, WorkExperienceModel
 
@@ -29,3 +32,23 @@ def show(request, user):
                   context={'basic_info': basic_info, 'edu_infos': edu_infos,
                            'skill_infos': skill_infos, 'list_bg_color': list_bg_color,
                            'list_badge_color': list_badge_color, 'work_experiences': work_experiences})
+
+
+class IndexView(View):
+    """
+    首页处理逻辑
+    """
+    template_name = "resume/index.html"
+
+    def get(self, request, *args, **kwargs):
+        user_obj = request.user
+        # 判断用户是否登录
+        if not user_obj.is_authenticated:
+            return redirect(reverse("account:login"))
+
+        return render(request, self.template_name, context={'user': user_obj})
+
+
+class BasicInfoUpdate(UpdateView):
+    model = BasicInfoModel
+    fields = ['name_cn', 'name_en']

@@ -13,7 +13,7 @@
 #   @Description : app内部url
 #
 # ======================================================================
-from django.urls import re_path, include
+from django.urls import re_path, include, path
 from rest_framework.routers import DefaultRouter
 
 from . import views
@@ -42,8 +42,10 @@ urlpatterns = [
     re_path('api/token/verify', TokenVerifyView.as_view(), name='token_verify'),
     re_path(r'^api/password_change/$', views.password_change, name='password_change'),
     # re_path('login', views.Login, name='login'),
-    re_path('index', views.IndexView.as_view(), name='index'),
     re_path('login', views.LoginView.as_view(), name='login'),
+    re_path('logout', views.SignoutView.as_view(), name='logout'),
+
+    # re_path('404', , name='40'),
 ]
 
 router = DefaultRouter()

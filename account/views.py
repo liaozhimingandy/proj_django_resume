@@ -111,7 +111,7 @@ class UserViewSet(CreateModelMixin, viewsets.GenericViewSet):
 
         if user_obj is not None and user_obj.is_active:
             login(request, user_obj)
-        return render(request, 'account/index.html', context={'user': user_obj})
+        return render(request, 'account/../resume/templates/resume/index.html', context={'user': user_obj})
 
 
 def index(request):
@@ -120,7 +120,7 @@ def index(request):
     # 判断用户是否登录
     if not user_obj.is_authenticated:
         return redirect(reverse("account:login"))
-    return render(request, 'account/index.html', context={'user': user_obj})
+    return render(request, 'account/../resume/templates/resume/index.html', context={'user': user_obj})
 
 
 def password_change(request):
@@ -153,9 +153,10 @@ class LoginView(View):
 
     def get(self, request, *args, **kwargs):
         form = LoginForm()
+
         # 判断用户是否登录
         if request.user.is_authenticated:
-            next_url = request.GET.get("next", reverse("account:index"))
+            next_url = request.GET.get("next", reverse("resume:index"))
             return redirect(next_url)
         else:
             msg = self.request.session.pop('msg', False)
@@ -184,20 +185,15 @@ class LoginView(View):
             login(request, user_obj)
 
         # return render(request, 'account/index.html', context={'user': user_obj})
-        return redirect('account:index')
+        return redirect('resume:index')
 
 
-class IndexView(View):
-    """
-    首页处理逻辑
-    """
-    template_name = "account/index.html"
-
-    def get(self,  request, *args, **kwargs):
-        user_obj = request.user
-
+class SignoutView(View):
+    """实现退出登录逻辑"""
+    def get(self, request, *args, **kwargs):
+        print(request.user)
         # 判断用户是否登录
-        if not user_obj.is_authenticated:
-            return redirect(reverse("account:login"))
-
-        return render(request, self.template_name, context={'user': user_obj})
+        if request.user.is_authenticated:
+            # 清理session
+            logout(request)
+            return redirect('account:login')
