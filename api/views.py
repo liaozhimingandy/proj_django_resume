@@ -23,6 +23,7 @@ class HelloApiViewSet(viewsets.ViewSet):
         """
         :param request:
         :return:
+
         """
         # print(request.query_params)
 
@@ -31,11 +32,66 @@ class HelloApiViewSet(viewsets.ViewSet):
 
     def create(self, request):
         """
-        创建数据
-        :param request:
-        :param page: 页数
-        :return:
-        """
+        # 实现备注:
+        **获取项目列表信息**<br><br>
+        # 参数信息
+        |  请求参数    |  类型 |  说明   |  是否必填    |   附加信息 |
+        | ---- | ---- | ---- | ---- | ---- |
+        |   name   |   string   | 项目名称 |    N |   无  |
+        |   page   |  int    |   页数  |  Y  |  无  |
+        |   page_size   |  int    |  每页容量  |  N   |  page_size=[10,20,50,100] |
+
+        |  响应参数    |  类型 |  说明    |
+        | ---- | ---- | ---- |
+        |   code   |   int   | 响应结果码  |
+        |   msg   |  string    |   响应结果信息  |
+        |   data   |  JSON    |  返回数据   |
+
+        ## 响应code说明
+        |  Code    |  Description    |
+        | ---- | ---- |
+        |   0   |   成功   |
+        |   10000   |  参数非法    |
+        | 10004 | 获取数据失败 |
+        # 示例:
+        ## request:
+                - body:
+                    Example value:
+                    {
+                        'name': 'publishSystem',
+                        'page': 1,
+                        'page_size': 10
+                    }
+
+        ## response:
+                - body:
+                     Example value:
+                     {
+                        "code": 0,
+                        "msg": "\u6210\u529f",
+                        "data": {
+                            "list": [{
+                                        "id": 2,
+                                        "name": "publishSystem",
+                                        "desc": "-",
+                                        "status": true,
+                                        "create_time": "2019-10-25 10:52:50",
+                                        "modify_time": "2019-10-25 11:31:32",
+                                        "is_delete": false
+                                    }],
+                            "count": 1
+                        }
+                    }
+
+
+          ##  responses:
+                400:
+                  description: "Invalid ID supplied"
+                404:
+                  description: "Pet not found"
+                405:
+                  description: "Validation exception"""
+
         # print(request.data)
         data = {'code': 200, 'msg': 'ok!'}
         return Response(data)
