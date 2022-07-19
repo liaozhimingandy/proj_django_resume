@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'ckeditor',  # 富文本编辑器
-
     'resume',  # 自定义app
     'api'
 ]
@@ -72,7 +71,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-
         },
     },
 ]
@@ -151,7 +149,7 @@ REST_FRAMEWORK = {
     # 指定过滤后端
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', ],
     # 指定用于支持coreapi的Schema
-    # 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
     # 渲染器
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
@@ -196,7 +194,8 @@ SWAGGER_SETTINGS = {
     'PERSIST_AUTH': True,
     'REFETCH_SCHEMA_WITH_AUTH': True,
     'REFETCH_SCHEMA_ON_LOGOUT': True,
-
+    # 如果支持json提交, 则接口文档中包含json输入框
+    'JSON_EDITOR': True,
     'DEFAULT_INFO': 'api.urls.swagger_info',  # 这里注意，更改为自己的项目路径
 
     'SECURITY_DEFINITIONS': {
