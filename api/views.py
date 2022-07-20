@@ -1,3 +1,4 @@
+from django.utils.decorators import method_decorator
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema, no_body
 from rest_framework.response import Response
@@ -10,7 +11,7 @@ from .serializers import HelloApiSerializer
 
 
 # Create your views here.
-class HelloApiViewSet(viewsets.ViewSet):
+class HelloApiViewSet(viewsets.ModelViewSet):
     """
     get:
     返回所有图书信息.
@@ -22,6 +23,7 @@ class HelloApiViewSet(viewsets.ViewSet):
 
     # 编写以下内容
     serializer_class = HelloApiSerializer
+    queryset = []
 
     def list(self, request):
         """
@@ -36,7 +38,7 @@ class HelloApiViewSet(viewsets.ViewSet):
 
     @swagger_auto_schema(
         request_body=HelloApiSerializer,
-        operation_description='创建数据',
+        operation_description='创建数据'
     )
     def create(self, request):
         """
@@ -168,3 +170,40 @@ class HelloApiViewSet(viewsets.ViewSet):
         """
         data = {'code': 200, 'msg': 'ok!'}
         return Response(data)
+
+    @swagger_auto_schema(
+        operation_id='hello_delete_bulk',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'data': openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    description='内容',
+                    properties={'patient': openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        description='患者信息',
+                        items=(openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            description='内容',
+                            properties={'patient_id': openapi.Schema(
+                                type=openapi.TYPE_STRING,
+                                description='患者id'
+                            )}
+                        ))
+                    )}
+                ),
+                'id': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='id'
+                ),
+            },
+            required=['id', ]
+        ),
+    )
+    @action(['delete'], detail=False, url_path='delete_bulk')
+    def delete(self, *args, **kwargs):
+        """批量删除
+
+        批量删除接口
+        """
+        pass
