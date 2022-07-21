@@ -1,18 +1,16 @@
+from collections import OrderedDict
+from itertools import chain
+
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
-from django.http.response import JsonResponse
 from django.urls import reverse
 from django.views import View
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, DetailView
+from django.apps import apps
 
 from .models import BasicInfoModel, EducationModel, SkillModel, WorkExperienceModel
 
 
 # Create your views here.
-def hello(request):
-    data = {'code': 200, 'msg': 'hello'}
-    return JsonResponse(data)
-
-
 def show(request, user):
     basic_info = get_object_or_404(BasicInfoModel, user_id=user)
     edu_infos = get_list_or_404(EducationModel, resume_id=basic_info.id)
@@ -29,7 +27,7 @@ def show(request, user):
                         'badge-secondary', 'badge-warning', 'badge-dark']
 
     return render(request, 'resume/resume.html',
-                  context={'basic_info': basic_info, 'edu_infos': edu_infos,
+                  context={'basicinfo': basic_info, 'edu_infos': edu_infos,
                            'skill_infos': skill_infos, 'list_bg_color': list_bg_color,
                            'list_badge_color': list_badge_color, 'work_experiences': work_experiences})
 
@@ -50,5 +48,80 @@ class IndexView(View):
 
 
 class BasicInfoUpdate(UpdateView):
+    template_name = 'resume/basicinfo/update.html'
     model = BasicInfoModel
     fields = ['name_cn', 'name_en']
+    context_object_name = 'obj'
+
+
+class DetailModelView(DetailView):
+    """
+    获取模型详细数据通用视图,多个模型均可使用
+    """
+    context_object_name = 'obj'
+
+    def get_template_names(self):
+        template_name = f"resume/{self.kwargs.get('model', '')}/detail.html"
+        return template_name
+
+    def dispatch(self, request, *args, **kwargs):
+        # parse param from url
+        _model = self.kwargs.get('model', '') + 'model'
+        self.model = apps.get_model('resume', _model.lower())
+        self.pk_url_kwarg = self.kwargs.get('pk', '')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        return self.model.objects.get(pk=self.pk_url_kwarg)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        _extra = {
+            'obj':  self.get_object(),
+            'obj_as_table': self.make_info_panel
+        }
+        context.update(**_extra)
+        self.field_for_model()
+        return context
+
+    @property
+    def make_info_panel(self):
+        """
+        动态转换字段,将字段转成html标签
+        :return:
+        """
+        exclude = [
+            'id', 'password', 'user_permissions', 'deleted', 'mark'
+        ]
+
+        base_field = self.field_for_model()
+        fields = [f for f in base_field]
+        default_fields = getattr(self.model._meta, 'list_display', None)
+        if default_fields and isinstance(default_fields, list):
+            o = [f for f in fields if f not in default_fields]
+            default_fields.extend(o)
+            fields = default_fields
+        panel = ''
+        for index, field in enumerate(fields, 1):
+            tr_format = '<tr><th>{th}</th><td>{td}</td>'
+        return panel
+
+    def field_for_model(self, fields=None, exclude=None):
+        field_list = []
+        opts = self.model._meta
+        for f in chain(opts.concrete_fields, opts.many_to_many):
+            if fields and f.name not in fields:
+                continue
+            if exclude and f.name in exclude:
+                continue
+            else:
+                field_list.append((f.name, f))
+        field_dict = OrderedDict(field_list)
+        return field_dict
+
+
+
+
+
+
+
