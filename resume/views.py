@@ -1,8 +1,10 @@
 from collections import OrderedDict
 from itertools import chain
 
+from django.contrib.admin.utils import label_for_field, display_for_field
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import UpdateView, DetailView
 from django.apps import apps
@@ -102,9 +104,18 @@ class DetailModelView(DetailView):
             default_fields.extend(o)
             fields = default_fields
         panel = ''
-        for index, field in enumerate(fields, 1):
+        for index, field_name in enumerate(fields, 1):
             tr_format = '<tr><th>{th}</th><td>{td}</td>'
-        return panel
+            th = label_for_field(name=field_name, model=self.model)
+
+            field = self.model._meta.get_field(field_name)
+            value = field.value_from_object(self.object)
+            value_field = display_for_field(value, field, empty_value_display=False)
+
+            tr_html = tr_format.format(th=th, td=value_field)
+            panel += tr_html
+
+        return mark_safe(panel)
 
     def field_for_model(self, fields=None, exclude=None):
         field_list = []

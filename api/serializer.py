@@ -25,3 +25,5 @@ class HelloSerializer(serializers.Serializer):
     def create(self, validated_data):
         return Hello(**validated_data)
 
+
+
