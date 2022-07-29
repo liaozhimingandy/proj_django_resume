@@ -253,7 +253,7 @@
         $(document).ready(function () {
             $('.menu-nav-item > a').click(function (e) {
                 //e.preventDefault();    加上这句则导航的<a>标签会失效
-                $('#menulist > .nav-item > a').removeClass('active');
+                $('.nav-item > a').removeClass('active');
                 $(this).addClass('active');
 
                 const address = $(this).attr("data-src");

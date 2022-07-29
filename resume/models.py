@@ -1,11 +1,13 @@
 import uuid
 import re
+from functools import cached_property
 
 from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, ValidationError
 
 from ckeditor.fields import RichTextField
+from django.urls import reverse_lazy
 
 
 def validate_contact_phone(value):
@@ -58,6 +60,22 @@ class Modified(models.Model):
         ordering = ['-modified']
 
 
+class Mark:
+    @cached_property
+    def get_absolute_url(self):
+        opts = self._meta
+        # if opts.proxy:
+        #    opts = opts.concrete_model._meta
+        url = reverse_lazy('resume:detail', args=[opts.model_name, self.pk])
+        return url
+
+    @cached_property
+    def get_edit_url(self):
+        opts = self._meta
+        url = reverse_lazy('resume:update', args=[opts.model_name, self.pk])
+        return url
+
+
 class BasicInfoModel(Operator, Creator, Created, Modified):
     SEX = (
         (1, '男性'),
@@ -81,13 +99,27 @@ class BasicInfoModel(Operator, Creator, Created, Modified):
     def __str__(self):
         return self.name_cn
 
+    @cached_property
+    def get_absolute_url(self):
+        opts = self._meta
+        # if opts.proxy:
+        #    opts = opts.concrete_model._meta
+        url = reverse_lazy('resume:detail', args=[opts.model_name, self.pk])
+        return url
+
+    @cached_property
+    def get_edit_url(self):
+        opts = self._meta
+        url = reverse_lazy('resume:update', args=[opts.model_name, self.pk])
+        return url
+
     class Meta:
         db_table = "basic_info"
         verbose_name = "简历基本信息"
         verbose_name_plural = verbose_name
 
 
-class WorkExperienceModel(Operator, Creator, Created, Modified):
+class WorkExperienceModel(Operator, Creator, Created, Modified, Mark):
     resume_id = models.ForeignKey(BasicInfoModel, on_delete=models.CASCADE, verbose_name='简历所属人', help_text='简历所属人')
     company = models.CharField(max_length=255, null=False, blank=False, verbose_name='工作单位', help_text='您的工作单位')
     gmt_duration = models.DateField(null=False, blank=False, verbose_name='工作开始时间', help_text='工作开始时间')
@@ -117,7 +149,7 @@ class EducationModel(Operator, Creator, Created, Modified):
         verbose_name_plural = verbose_name
 
 
-class SkillModel(Operator, Creator, Created, Modified):
+class SkillModel(Operator, Creator, Created, Modified, Mark):
     resume_id = models.ForeignKey(BasicInfoModel, on_delete=models.CASCADE, verbose_name='简历所属人', help_text='简历所属人')
     skill = models.CharField(max_length=32, null=False, blank=False, verbose_name='技能', help_text='技能描述')
     skill_level = models.PositiveSmallIntegerField(verbose_name='掌握程度', help_text='技能掌握程度', validators=[

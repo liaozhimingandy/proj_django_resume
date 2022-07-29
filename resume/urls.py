@@ -15,7 +15,7 @@
 # ======================================================================
 from django.urls import path, re_path
 
-from .views import show, IndexView, BasicInfoUpdate, DetailModelView
+from .views import show, IndexView, BasicInfoUpdate, DetailModelView, ListModelView
 
 app_name = 'resume'
 
@@ -25,4 +25,5 @@ urlpatterns = [
     re_path('^$', IndexView.as_view(), name='index'),
     path('basicinfo/<int:pk>/update', BasicInfoUpdate.as_view(), name='basicinfo-update'),
     re_path(r'^(?:detail/(?:(?P<model>\w+)/(?P<pk>\d+)))/$', DetailModelView.as_view(), name='detail'),
+    re_path(r'^(?:list/(?P<model>\w+))/$', ListModelView.as_view(), name='list'),
 ]
