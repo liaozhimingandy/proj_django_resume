@@ -38,76 +38,17 @@ class HelloApiViewSet(viewsets.ModelViewSet):
 
     @swagger_auto_schema(
         request_body=HelloApiSerializer,
-        operation_description='创建数据'
+        operation_description='创建数据',
+        responses={409: '已存在该数据', 401: '未认证', 400: openapi.Schema(type=openapi.TYPE_OBJECT,
+                                                                  properties={
+                                                                      'code': openapi.Schema(type=openapi.TYPE_INTEGER,
+                                                                                             description='错误代码',
+                                                                                             default=404),
+                                                                      'msg': openapi.Schema(type=openapi.TYPE_STRING,
+                                                                                            description='错误描述',
+                                                                                            default='未找到数据')})}
     )
     def create(self, request):
-        """
-        # 实现备注:
-        **获取项目列表信息**<br><br>
-        # 参数信息
-        |  请求参数    |  类型 |  说明   |  是否必填    |   附加信息 |
-        | ---- | ---- | ---- | ---- | ---- |
-        |   name   |   string   | 项目名称 |    N |   无  |
-        |   page   |  int    |   页数  |  Y  |  无  |
-        |   page_size   |  int    |  每页容量  |  N   |  page_size=[10,20,50,100] |
-
-        |  响应参数    |  类型 |  说明    |
-        | ---- | ---- | ---- |
-        |   code   |   int   | 响应结果码  |
-        |   msg   |  string    |   响应结果信息  |
-        |   data   |  JSON    |  返回数据   |
-
-        ## 响应code说明
-        |  Code    |  Description    |
-        | ---- | ---- |
-        |   0   |   成功   |
-        |   10000   |  参数非法    |
-        | 10004 | 获取数据失败 |
-
-        parameters:
-          - name: name
-            type: string
-            required: true
-            location: form
-        # 示例:
-        ## request:
-                - body:
-                    Example value:
-                    {
-                        'name': 'publishSystem',
-                        'page': 1,
-                        'page_size': 10
-                    }
-
-        ## response:
-                - body:
-                     Example value:
-                     {
-                        "code": 0,
-                        "msg": "\u6210\u529f",
-                        "data": {
-                            "list": [{
-                                        "id": 2,
-                                        "name": "publishSystem",
-                                        "desc": "-",
-                                        "status": true,
-                                        "create_time": "2019-10-25 10:52:50",
-                                        "modify_time": "2019-10-25 11:31:32",
-                                        "is_delete": false
-                                    }],
-                            "count": 1
-                        }
-                    }
-
-
-          ##  responses:
-                400:
-                  description: "Invalid ID supplied"
-                404:
-                  description: "Pet not found"
-                405:
-                  description: "Validation exception"""
-
         # print(request.data)
         data = {'code': 200, 'msg': 'ok!'}
         return Response(data)
@@ -205,5 +146,27 @@ class HelloApiViewSet(viewsets.ModelViewSet):
         """批量删除
 
         批量删除接口
+        """
+        pass
+
+    @swagger_auto_schema(
+        manual_parameters=[code],
+        responses={
+            200: HelloApiSerializer(many=True),
+            404: openapi.Schema(type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'code': openapi.Schema(type=openapi.TYPE_NUMBER,
+                                                           description='错误代码', default=404),
+                                    'msg': openapi.Schema(type=openapi.TYPE_STRING,
+                                                          description='错误描述', default='未找到数据!')})
+        },
+        security=[],
+        operation_id=None,
+        operation_description='查询报告数据',
+    )
+    @action(['get'], detail=False, url_path='report')
+    def report(self, *args, **kwargs):
+        """
+        查询报告数据
         """
         pass
