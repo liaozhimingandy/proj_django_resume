@@ -76,7 +76,7 @@ class Mark:
         return url
 
 
-class BasicInfoModel(Operator, Creator, Created, Modified):
+class BasicInfoModel(Operator, Creator, Created, Modified, Mark):
     SEX = (
         (1, '男性'),
         (2, '女性'),
@@ -135,7 +135,7 @@ class WorkExperienceModel(Operator, Creator, Created, Modified, Mark):
         verbose_name_plural = verbose_name
 
 
-class EducationModel(Operator, Creator, Created, Modified):
+class EducationModel(Operator, Creator, Created, Modified, Mark):
     resume_id = models.ForeignKey(BasicInfoModel, on_delete=models.CASCADE, verbose_name='简历所属人', help_text='简历所属人')
     edu_unit = models.CharField(max_length=255, null=False, blank=False, verbose_name='教育单位/机构', help_text='教育单位/机构')
     edu_desc = RichTextField(null=False, blank=False, verbose_name='教育描述', help_text='描述一下你的教育经历')

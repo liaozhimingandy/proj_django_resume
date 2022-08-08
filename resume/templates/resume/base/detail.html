@@ -18,7 +18,7 @@
         {%endblock box-tools-extra%}
 
         <div class="btn-group">
-          <a class="btn btn-default btn-sm" title="编辑 {{object}}" href="{%url 'resume:detail' 'basicinfo' obj.pk%}">
+          <a class="btn btn-default btn-sm" title="编辑 {{object}}" href="{%url 'resume:basicinfo-update' obj.id%}">
             <i class="fa fa-edit"></i><span> 编辑</span>
           </a>
           <button type="button" class="btn btn-default btn-sm" onclick="window.history.go(-1)">

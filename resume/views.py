@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.admin.utils import label_for_field, display_for_field
 from django.forms import fields_for_model
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.views import View
@@ -53,10 +53,15 @@ class IndexView(View):
 
 
 class BasicInfoUpdate(UpdateView):
-    template_name = 'resume/basicinfo/update.html'
+    template_name = 'resume/basicinfomodel/update.html'
     model = BasicInfoModel
-    fields = ['name_cn', 'name_en']
-    context_object_name = 'obj'
+    # fields = ['name_cn']
+    fields = fields_for_model(model=model)
+    # success_url = '/resume/'
+
+    def get_success_url(self):
+        pk = self.kwargs.get('pk', '')
+        return reverse_lazy("resume:detail", kwargs={'model': 'BasicInfoModel', 'pk': pk})
 
 
 class DetailModelView(DetailView):
@@ -333,3 +338,16 @@ class ListModelView(ListView):
                 li = '<li><a href="{}">显示{}项</a></li>'.format(url, p)
                 html += li
             return mark_safe(html)
+
+
+class UpdateModelView(UpdateView):
+    """
+    更新通用视图
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        # parse param from url
+        _model = self.kwargs.get('model', '')
+        self.model = apps.get_model('resume', _model.lower())
+        self.pk_url_kwarg = self.kwargs.get('pk', '')
+        return super().dispatch(request, *args, **kwargs)
