@@ -7,9 +7,11 @@ from django.forms import fields_for_model
 from django.shortcuts import render, get_object_or_404, get_list_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.html import format_html
+from django.utils.http import urlencode
 from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.generic import UpdateView, DetailView, ListView
+from django.views.generic.edit import CreateView
 from django.apps import apps
 
 from .models import BasicInfoModel, EducationModel, SkillModel, WorkExperienceModel
@@ -57,6 +59,7 @@ class BasicInfoUpdate(UpdateView):
     model = BasicInfoModel
     # fields = ['name_cn']
     fields = fields_for_model(model=model)
+
     # success_url = '/resume/'
 
     def get_success_url(self):
@@ -88,7 +91,8 @@ class DetailModelView(DetailView):
         context = super().get_context_data(**kwargs)
         _extra = {
             'obj': self.get_object(),
-            'obj_as_table': self.make_info_panel
+            'obj_as_table': self.make_info_panel,
+            'model': self.kwargs.get('model', '')
         }
         context.update(**_extra)
         self.field_for_model()
@@ -188,6 +192,25 @@ class ListModelView(ListView):
     extra_fields = ['field-first', 'field-second', 'field-last']
     paginate_by = 10
 
+    def get_query_string(self, new_params=None, remove=None):
+        new_params = {} if not new_params else new_params
+        remove = [] if not remove else remove
+        p = self.get_params.copy()
+        for r in remove:
+            for k in list(p):
+                if k.startswith(r):
+                    del p[k]
+        for k, v in new_params.items():
+            if v is None:
+                if k in p:
+                    del p[k]
+            else:
+                p[k] = v
+        if p:
+            return '?%s' % urlencode(sorted(p.items()))
+        else:
+            return ''
+
     def dispatch(self, request, *args, **kwargs):
         model = self.kwargs.get('model', '')
         self.model = apps.get_model('resume', model.lower())
@@ -207,7 +230,8 @@ class ListModelView(ListView):
         _extra = {
             'thead': self.make_thead(),
             'tbody': self.make_tbody(objs),
-            'paginate': self.make_paginate(objs.count())
+            'paginate': self.make_paginate(objs.count()),
+            'model_name': self.kwargs.get('model', '')
         }
         context.update(**_extra)
         return context
@@ -345,9 +369,40 @@ class UpdateModelView(UpdateView):
     更新通用视图
     """
 
+    def get_success_url(self):
+        tpl_name = f"/resume/detail/{self.kwargs.get('model', '')}/{self.kwargs.get('pk', '')}"
+        return tpl_name
+
+    @property
+    def fields(self):
+        fields = fields_for_model(self.model)
+        return fields
+
+    def get_template_names(self):
+        tpl_name = f"resume/{self.kwargs.get('model', '')}/update.html"
+        return tpl_name
+
+    def get_object(self, queryset=None):
+        return self.model.objects.get(pk=self.pk_url_kwarg)
+
     def dispatch(self, request, *args, **kwargs):
         # parse param from url
         _model = self.kwargs.get('model', '')
         self.model = apps.get_model('resume', _model.lower())
         self.pk_url_kwarg = self.kwargs.get('pk', '')
         return super().dispatch(request, *args, **kwargs)
+
+
+class NewModelView(CreateView):
+    template_name = 'resume/base/new.html'
+
+    @property
+    def fields(self):
+        _model = self.kwargs.get('model', '')
+        self.model = apps.get_model('resume', _model.lower())
+        fields = fields_for_model(self.model)
+        return fields
+
+    def get_success_url(self):
+        tpl_name = f"/resume/"
+        return tpl_name

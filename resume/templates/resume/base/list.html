@@ -29,7 +29,7 @@
 {% block main-content %}
 <div class="card m-2">
   <div class="card-body">
-    <h5 class="card-title">内容</h5>
+    <h5 class="card-title"><a class="btn btn-default btn-sm margin-r-5" href="{%url 'resume:new' model_name %}">新建</a></h5>
     <p class="card-text">
       <div class="box-body table-responsive">
         <table id="objects-list" class="table table-bordered table-hover table-condensed text-nowrap">
@@ -64,7 +64,42 @@
             {%endfor%}
           {%endblock%}
           </tbody>
+
+  </div>
         </table>
+   <hr>
+        <div class="box-footer no-print clearfix" style="display: block;">
+
+        {% if is_paginated %}
+          <ul class="pagination pagination-sm no-margin pull-right">
+            {% if paginate %}
+            <div class="btn-group dropup pull-left">
+              <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                {{paginate}}
+              </ul>
+            </div>
+            {% endif %}
+            {% if page_obj.has_previous %}
+              <li><a href="?page=1">首页</a></li>
+              <li><a href="?page={{ page_obj.previous_page_number  }}">上一页</a></li>
+            {% else %}
+              <li class="previous disabled"><a>上一页</a></li>
+            {% endif %}
+              <li class="previous disabled">
+              <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+              </li>
+            {% if page_obj.has_next %}
+              <li><a href="?page={{ page_obj.next_page_number }}">下一页</a></li>
+              <li><a href="?page={{ page_obj.paginator.num_pages }}">末页</a></li>
+            {% else %}
+              <li class="previous disabled"><a>下一页</a></li>
+            {% endif %}
+          </ul>
+        {% endif %}
+    </div>
     </div></p>
   </div>
 </div>
